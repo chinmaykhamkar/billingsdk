@@ -81,6 +81,8 @@ export function ProrationPreview({
     currentPlan.price
   );
   const newPrice = toNumber(billingCycle === 'monthly' ? newPlan.monthlyPrice : newPlan.yearlyPrice);
+  const chargeCurrency = newPlan.currency ?? currentPlan.plan.currency ?? "$";
+  const creditCurrency = currentPlan.plan.currency ?? newPlan.currency ?? "$";
   const clampedUnusedDays = Math.max(0, Math.min(daysRemaining, currentCycleDays));
   const isNextCycle = typeof effectiveDate === 'string' && effectiveDate.toLowerCase().includes('next');
   
@@ -142,7 +144,7 @@ export function ProrationPreview({
               </div>
               <h3 className="font-semibold text-lg">{currentPlan.plan.title}</h3>
               <p className="text-sm text-muted-foreground mb-3">
-                {currentPlan.plan.currency}{currentPrice}/{currentPlan.type}
+                {creditCurrency}{currentPrice}/{currentPlan.type}
               </p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock className="h-3 w-3" />
@@ -189,7 +191,7 @@ export function ProrationPreview({
               </div>
               <h3 className="font-semibold text-lg">{newPlan.title}</h3>
               <p className="text-sm text-muted-foreground mb-3">
-                {newPlan.currency}{newPrice}/{billingCycle}
+                {chargeCurrency}{newPrice}/{billingCycle}
               </p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" />
@@ -223,7 +225,7 @@ export function ProrationPreview({
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Credit for unused time</span>
                 <span className="text-green-600 font-medium">
-                  -{currentPlan.plan.currency || newPlan.currency}{Math.abs(creditAmount).toFixed(2)}
+                  -{creditCurrency}{Math.abs(creditAmount).toFixed(2)}
                 </span>
               </div>
               
@@ -232,7 +234,7 @@ export function ProrationPreview({
                   Prorated charge ({prorationDays} days)
                 </span>
                 <span className="font-medium">
-                  +{newPlan.currency}{proratedCharge.toFixed(2)}
+                  +{chargeCurrency}{proratedCharge.toFixed(2)}
                 </span>
               </div>
               
@@ -246,7 +248,7 @@ export function ProrationPreview({
                   "text-lg",
                   netAmount >= 0 ? "text-foreground" : "text-green-600"
                 )}>
-                  {netAmount >= 0 ? "+" : ""}{newPlan.currency}{netAmount.toFixed(2)}
+                  {netAmount >= 0 ? "+" : ""}{chargeCurrency}{netAmount.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -264,8 +266,8 @@ export function ProrationPreview({
               {isNextCycle
                 ? ' No immediate charge.'
                 : (netAmount >= 0
-                    ? ` You'll be charged ${newPlan.currency}${Math.abs(netAmount).toFixed(2)}.`
-                    : ` You'll receive a ${newPlan.currency}${Math.abs(netAmount).toFixed(2)} credit.`)
+                    ? ` You'll be charged ${chargeCurrency}${Math.abs(netAmount).toFixed(2)}.`
+                    : ` You'll receive a ${chargeCurrency}${Math.abs(netAmount).toFixed(2)} credit.`)
               }
             </p>
           </motion.div>
